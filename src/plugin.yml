@@ -1,0 +1,12 @@
+name: Credit
+main: cc.isotopestudio.credit.Credit
+
+author: Mars
+description: 
+website: http://isotopestudio.cc
+version: 1.0.0
+
+commands:
+  credit:
+    description: 
+    usage: /<command>
