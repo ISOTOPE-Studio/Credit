@@ -4,7 +4,7 @@ main: cc.isotopestudio.credit.Credit
 author: Mars
 description: 
 website: http://isotopestudio.cc
-version: 1.0.0
+version: 1.0.1
 
 commands:
   credit:
