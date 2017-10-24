@@ -14,6 +14,8 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Map;
 
+import static cc.isotopestudio.credit.Credit.config;
+
 public class CommandCredit implements CommandExecutor {
 
     @Override
@@ -24,6 +26,7 @@ public class CommandCredit implements CommandExecutor {
                 sender.sendMessage(S.toGreen("/" + label + " add <username> <itemID:type> <amountOfCredits>"));
                 sender.sendMessage(S.toGreen("/" + label + " remove <username> <itemID:type> <amountOfCredits>"));
                 sender.sendMessage(S.toGreen("/" + label + " <username>"));
+                sender.sendMessage(S.toGreen("/" + label + " reload - reload config"));
                 return true;
             }
             if (args[0].equalsIgnoreCase("add")) {
@@ -70,16 +73,39 @@ public class CommandCredit implements CommandExecutor {
                     sender.sendMessage(S.toRed("The player does not exist"));
                     return true;
                 }
-                int credit;
+                String[] strings = args[2].split(":");
+                int type;
+                byte b = 0;
                 try {
-                    credit = Integer.parseInt(args[3]);
-                    if (credit < 0) throw new NumberFormatException();
+                    type = Integer.parseInt(strings[0]);
+                    if (strings.length == 2) {
+                        b = (byte) Integer.parseInt(strings[1]);
+                    }
                 } catch (NumberFormatException e) {
                     sender.sendMessage(S.toRed("The format of the number isn't correct"));
                     return true;
                 }
+                int remove;
+                try {
+                    remove = Integer.parseInt(args[3]);
+                    if (remove < 0) throw new NumberFormatException();
+                } catch (NumberFormatException e) {
+                    sender.sendMessage(S.toRed("The format of the number isn't correct"));
+                    return true;
+                }
+                int credit = CreditDataManager.getPlayerCredit(player, type, b);
+                if (credit > 0) {
+                    if (credit - remove < 0) credit = 0;
+                    else credit -= remove;
+                    CreditDataManager.setPlayerCredit(player, type, b, credit);
+                }
 
                 return true;
+            }
+            if (args[0].equalsIgnoreCase("reload")) {
+                config.reload();
+                ConfigUpdateTask.run();
+                sender.sendMessage(S.toGreen("Reload complete"));
             }
             OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
             if (player == null) {
